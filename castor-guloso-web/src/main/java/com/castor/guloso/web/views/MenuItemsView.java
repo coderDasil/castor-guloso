@@ -9,14 +9,14 @@ import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.H2;
+import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
+import com.vaadin.flow.data.renderer.ComponentRenderer;
 import com.vaadin.flow.router.Route;
 import jakarta.annotation.security.PermitAll;
-
-import java.time.format.DateTimeFormatter;
 
 @Route("menu-items")
 @PermitAll
@@ -42,6 +42,17 @@ public class MenuItemsView extends VerticalLayout {
         grid.getColumnByKey("name").setHeader(getTranslation("menu.name")).setAutoWidth(true);
         grid.getColumnByKey("description").setHeader(getTranslation("menu.description"));
         grid.getColumnByKey("available").setHeader(getTranslation("menu.available")).setAutoWidth(true);
+
+        // History button column
+        grid.addColumn(new ComponentRenderer<>(item -> {
+            var historyBtn = new Button(getTranslation("menu.price.view-history"), e ->
+                    getUI().ifPresent(ui -> ui.navigate(
+                            PriceHistoryView.class, item.getId())));
+            historyBtn.getStyle().set("font-size", "var(--lumo-font-size-s)");
+            return historyBtn;
+        })).setHeader(getTranslation("menu.price.history"))
+                .setAutoWidth(true)
+                .setFlexGrow(0);
 
         grid.asSingleSelect().addValueChangeListener(e -> {
             if (e.getValue() != null) {
