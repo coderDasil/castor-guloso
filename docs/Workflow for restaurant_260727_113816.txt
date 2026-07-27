@@ -1,0 +1,292 @@
+I cannot generate a downloadable PDF file directly in this chat, but I can provide you with a comprehensive, production-ready Markdown (.md) document that you can copy, paste into any text editor, and instantly convert to PDF using:
+
+· VS Code (with the "Markdown PDF" extension)
+· Typora (Export → PDF)
+· Pandoc (pandoc workflow.md -o workflow.pdf)
+· Or any free online Markdown-to-PDF converter
+
+Here is the complete documentation. Save it as WhatsApp-Lunch-Automation-Workflow.md.
+
+───
+
+markdown
+# WhatsApp Lunch Order Automation System – Technical Workflow Documentation
+
+**Version:** 1.0  
+**Target Audience:** Development Team, Restaurant Owner (Stakeholder)  
+**System Type:** Java Spring Boot Backend + Admin PWA + WhatsApp Business API
+
+---
+
+## 1. Executive Summary
+
+This system replaces the restaurant owner's manual notebook and daily WhatsApp broadcast routine with an automated digital workflow.  
+The owner manages clients and views live order statuses via a mobile-friendly Admin App. The system automatically sends personalized lunch requests via WhatsApp, processes replies via webhooks, and generates a final kitchen summary—all hosted for free.
+
+---
+
+## 2. System Architecture
+
+
+┌─────────────────┐ ┌─────────────────────┐ ┌─────────────────────┐
+│ Admin App │◄───────►│ Spring Boot │◄───────►│ WhatsApp Business │
+│ (PWA / Flutter)│ REST │ Backend (Java 17) │ Webhook│ API (Meta) │
+└─────────────────┘ └──────────┬──────────┘ └──────────┬──────────┘
+│ │
+▼ ▼
+┌─────────────────┐ ┌─────────────────┐
+│ Database │ │ Business │
+│ (PostgreSQL/ │ │ Clients' │
+│ H2/MySQL) │ │ WhatsApp │
+└─────────────────┘ └─────────────────┘
+
+**Components:**
+- **Backend:** Spring Boot with `@Scheduled` tasks, Webhook controllers, and RestTemplate for Meta API calls.
+- **Database:** Stores clients, menus, order history, and daily statuses.
+- **Admin App:** A Progressive Web App (React/Vue) that consumes the REST API—accessible via browser and savable to the phone's home screen.
+- **WhatsApp API:** Meta's official Business Cloud API for sending/receiving messages.
+
+---
+
+## 3. Complete Daily Workflow (Detailed)
+
+### Phase 0: System Setup (One-Time)
+
+| Step | Actor | Action | System Response |
+|------|-------|--------|-----------------|
+| 0.1 | Owner | Registers business clients (Name, Phone, optional notes) via Admin App | Stores clients in `customers` table |
+| 0.2 | Owner | Sets today's lunch menu (e.g., "Rice, Beans, Steak, Baked Potato") | Stores in `daily_menus` table |
+| 0.3 | Owner | (Optional) Sets default schedule (e.g., 10:00 AM daily) | Saves to `settings` table |
+
+---
+
+### Phase 1: Daily Trigger (Automated or Manual)
+
+| Step | Actor | Action | System Logic |
+|------|-------|--------|--------------|
+| 1.1 | **Scheduler** OR **Owner** | At 10:00 AM (auto) OR owner taps "Send Requests" button | Backend fetches `active = true` clients from DB |
+| 1.2 | Backend | Creates a `daily_session` record with `status = 'OPEN'` | Links all orders to this session ID for easy reporting |
+
+---
+
+### Phase 2: Personalization Engine (The "Smart" Logic)
+For each client, the backend executes this decision tree:
+
+
+1. Fetch client's last 5 orders (ORDER BY date DESC LIMIT 5)
+2. Count frequency of each menu item
+3. Find the most frequent item (favorite)
+4. If favorite exists:
+Message = "Hi {name}, today's lunch: {menu}. You usually pick {favorite}. Reply '1' for that, or type your choice."
+Else (new client / no history):
+Message = "Hi {name}, welcome! Today's lunch: {menu}. Please type what you'd like."
+
+**Template Message Approval:**  
+This message must be submitted as a **Utility Template** to Meta for approval before going live.  
+Example template variable: `{{1}}` = client name, `{{2}}` = menu, `{{3}}` = favorite.
+
+---
+
+### Phase 3: Sending & Status Tracking
+
+| Step | Action | System Update |
+|------|--------|---------------|
+| 3.1 | Backend calls `POST /v18.0/{phone-id}/messages` with the personalized template | Logs the `message_id` for tracking |
+| 3.2 | Backend creates a record in `daily_orders` table with `status = 'PENDING'` | Links client, date, session, and sent message |
+| 3.3 | Admin App receives WebSocket/SSE update showing "⏳ Awaiting reply" for each client | Owner sees live progress on his phone |
+
+---
+
+### Phase 4: Receiving Client Replies (Webhook)
+
+| Step | Actor | Action | System Logic |
+|------|-------|--------|--------------|
+| 4.1 | Business Client | Replies on WhatsApp (e.g., "Steak" or "1") | Meta sends POST request to your `/webhook` endpoint |
+| 4.2 | Backend (Webhook Controller) | Verifies the webhook signature, parses JSON | Extracts `from` (phone) and `text` (reply) |
+| 4.3 | Backend | Matches phone number to `customers` table | Finds the open `daily_session` for today |
+| 4.4 | Backend | Updates `daily_orders` record: `item = reply, status = 'CONFIRMED'` | Timestamps the reply |
+| 4.5 | Backend | Pushes real-time update to Admin App | Owner's screen changes to "✅ Steak" immediately |
+
+**Edge Cases Handled:**
+- Invalid reply (item not on menu) → System replies: *"Sorry, we don't have that. Please choose from: Rice, Beans, Steak, Baked Potato."*
+- Duplicate reply → System updates the order (last reply wins) and sends: *"Updated to Steak."*
+- No reply by cutoff → Status remains `'NO_REPLY'` (owner can send reminders).
+
+---
+
+### Phase 5: Real-Time Admin Dashboard (Replacing the Notebook)
+The Admin App displays three main views:
+
+| View | Content | Update Frequency |
+|------|---------|------------------|
+| **Live Board** | List of all clients with status: 🟡 Pending / ✅ Confirmed / 🔴 No Reply | Realtime (WebSocket) |
+| **History** | Per-client order history (last 30 days) with timestamps | On-demand (REST call) |
+| **Actions** | Buttons: "Send Reminders" (to pending only), "Finalize Orders" | Manual |
+
+---
+
+### Phase 6: Cutoff & Kitchen Summary
+
+| Step | Time | Action | Output |
+|------|------|--------|--------|
+| 6.1 | 11:30 AM (or manual) | Backend `@Scheduled` task OR owner taps "Finalize Orders" | Closes the `daily_session` (`status = 'CLOSED'`) |
+| 6.2 | Backend | Aggregates all `CONFIRMED` orders by menu item | Generates summary: e.g., `{Steak: 5, Rice: 3, Baked Potato: 2}` |
+| 6.3 | Backend | Pushes final summary to Admin App | Owner shows kitchen staff the digital ticket |
+| 6.4 | Backend | (Optional) Sends a summary WhatsApp message to the owner | Owner receives a backup copy of the totals |
+
+**The physical notebook is now completely retired.**
+
+---
+
+## 4. Database Schema (Core Tables)
+
+```sql
+-- Clients
+CREATE TABLE customers (
+    id BIGSERIAL PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    phone VARCHAR(20) UNIQUE NOT NULL,
+    active BOOLEAN DEFAULT TRUE,
+    notes TEXT,
+    created_at TIMESTAMP DEFAULT NOW()
+);
+
+<br>
+
+-- Daily menus
+CREATE TABLE daily_menus (
+    id BIGSERIAL PRIMARY KEY,
+    menu_date DATE UNIQUE NOT NULL,
+    items JSONB NOT NULL,  -- e.g., ["Rice", "Beans", "Steak", "Baked Potato"]
+    created_at TIMESTAMP DEFAULT NOW()
+);
+
+<br>
+
+-- Daily sessions (to group orders by day)
+CREATE TABLE daily_sessions (
+    id BIGSERIAL PRIMARY KEY,
+    session_date DATE NOT NULL,
+    status VARCHAR(20) DEFAULT 'OPEN',  -- OPEN, CLOSED
+    cutoff_time TIMESTAMP,
+    created_at TIMESTAMP DEFAULT NOW()
+);
+
+<br>
+
+-- Orders
+CREATE TABLE daily_orders (
+    id BIGSERIAL PRIMARY KEY,
+    session_id BIGINT REFERENCES daily_sessions(id),
+    customer_id BIGINT REFERENCES customers(id),
+    menu_item VARCHAR(100),
+    status VARCHAR(20) DEFAULT 'PENDING',  -- PENDING, CONFIRMED, NO_REPLY
+    whatsapp_message_id VARCHAR(255),
+    replied_at TIMESTAMP,
+    created_at TIMESTAMP DEFAULT NOW()
+);
+
+
+───
+
+1. Critical API Endpoints (Java Controller Outline)
+Endpoint Method Purpose
+/webhook GET Meta verification (echo challenge token)
+/webhook POST Receive inbound client replies (JSON payload)
+/api/admin/send-requests POST Manual trigger to send all requests
+/api/admin/remind POST Send reminder to only PENDING clients
+/api/admin/finalize POST Close session and generate summary
+/api/admin/dashboard GET Fetch live status for Admin App
+
+───
+
+1. Admin App UI Mockup (Replacing the Notebook)
+Screen 1 – Live Order Board:
+┌─────────────────────────────┐
+│ ☀️ Today's Lunch – 10:30 AM  │
+│ [ Send Requests ] [ Finalize ]│
+├─────────────────────────────┤
+│ 👤 Acme Corp                 │
+│    ✅ Steak (replied 10:15)  │
+│ 👤 Beta Inc.                 │
+│    🟡 Awaiting reply...      │
+│ 👤 Gamma LLC                 │
+│    🔴 No reply               │
+│ 👤 Delta Ltd.                │
+│    ✅ Rice (replied 10:05)   │
+├─────────────────────────────┤
+│ 📊 Summary: 2x Steak, 1x Rice│
+└─────────────────────────────┘
+
+Screen 2 – Client History:
+┌─────────────────────────────┐
+│ 📅 Acme Corp – History       │
+├─────────────────────────────┤
+│ Jul 26: Steak               │
+│ Jul 25: Rice                │
+│ Jul 24: Steak               │
+│ Jul 23: Baked Potato        │
+│ Jul 22: Steak               │
+│ 📌 Favorite: Steak (3x)     │
+└─────────────────────────────┘
+
+
+───
+
+1. Free Hosting Recommendations
+Service Free Tier Specs Best For
+Render 512 MB RAM, auto-deploy from GitHub Easiest setup
+Railway 500 MB RAM, free credits/month Good for Docker images
+Oracle Cloud 4-core ARM, 24 GB RAM (always free) Heavy production workloads
+Heroku (deprecated free) N/A Avoid—no longer free
+For the Admin App (frontend):
+Host the static PWA files on Vercel or Netlify – both have generous free tiers.
+
+───
+
+1. Estimated Monthly Cost (WhatsApp API)
+Message Type Price (US/UK per conv) Your Use Case
+Utility (order requests) ~0.008 Daily lunch messages
+Service (replies within 24h) Free Client replies
+Authentication ~$`0.003 Not used
+Estimate for 50 clients × 22 workdays:
+50 × 22 × `$0.006 = ~$6.60/month – very affordable.
+
+───
+
+1. Development Roadmap (Estimated Timeline)
+Milestone Tasks Time
+Week 1 Meta Business account setup + webhook verification in Java 3 days
+Week 2 Database schema + Spring Data JPA repositories + scheduler 3 days
+Week 3 Personalization logic + template message sending 3 days
+Week 4 Admin App PWA (React) + REST integration + WebSocket 4 days
+Week 5 Testing, edge-case handling, deployment to free host 3 days
+Total ~16 working days
+
+───
+
+1. Next Steps for You (Developer)
+2. Sign up at Meta for Developers and create a Business App.
+3. Get your Permanent Access Token and Phone Number ID.
+4. Submit a test template message for approval.
+5. Expose a public HTTPS endpoint (using ngrok for local testing) to receive webhooks.
+6. Start coding the Spring Boot project with the schema above.
+
+───
+
+End of Document
+<br>
+
+---
+
+<br>
+
+### How to Convert This to PDF
+1. Copy the entire markdown block above.
+2. Paste it into a new file named `Workflow.md`.
+3. Open it in **VS Code** → install "Markdown PDF" extension → right-click → "Export to PDF".
+4. Or upload it to **https://www.markdowntopdf.com/** and download instantly.
+
+<br>
+
+If you want me to expand any section (e.g., full Java code for the Webhook controller, or the exact JSON payload for Meta's API), just tell me which part and I'll add it to a new version of this document.

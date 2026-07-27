@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.castor.guloso</groupId>
+        <artifactId>castor-guloso</artifactId>
+        <version>0.0.1-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>castor-guloso-web</artifactId>
+    <packaging>war</packaging>
+    <name>Castor Guloso — Vaadin Web UI</name>
+    <description>Java-based frontend using Vaadin 24. Pure Java UI components
+        with server-side rendering and WebSocket push for live updates.</description>
+
+    <dependencies>
+        <!-- Internal -->
+        <dependency>
+            <groupId>com.castor.guloso</groupId>
+            <artifactId>castor-guloso-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.castor.guloso</groupId>
+            <artifactId>castor-guloso-customer</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.castor.guloso</groupId>
+            <artifactId>castor-guloso-menu</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.castor.guloso</groupId>
+            <artifactId>castor-guloso-order</artifactId>
+        </dependency>
+
+        <!-- Vaadin -->
+        <dependency>
+            <groupId>com.vaadin</groupId>
+            <artifactId>vaadin-core</artifactId>
+        </dependency>
+
+        <!-- Spring Boot -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+
+        <!-- Lombok -->
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <optional>true</optional>
+        </dependency>
+
+        <!-- Test -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <!-- Vaadin Maven plugin for production build -->
+            <plugin>
+                <groupId>com.vaadin</groupId>
+                <artifactId>vaadin-maven-plugin</artifactId>
+                <version>${vaadin.version}</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>prepare-frontend</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+</project>

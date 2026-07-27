@@ -1,0 +1,9 @@
+/* Castor Guloso — theme overrides */
+
+/* Beaver-ish accent: warm amber/wood tones */
+html {
+    --lumo-primary-color: #c8722e;
+    --lumo-primary-color-50pct: rgba(200, 114, 46, 0.5);
+    --lumo-primary-color-10pct: rgba(200, 114, 46, 0.1);
+    --lumo-primary-text-color: #8b5e2b;
+}
