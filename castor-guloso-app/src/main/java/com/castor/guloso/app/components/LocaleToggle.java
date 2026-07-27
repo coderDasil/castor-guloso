@@ -1,6 +1,6 @@
-package com.castor.guloso.web.components;
+package com.castor.guloso.app.components;
 
-import com.castor.guloso.web.config.CastorGulosoI18NProvider;
+import com.castor.guloso.app.config.CastorGulosoI18NProvider;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;

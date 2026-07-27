@@ -1,4 +1,4 @@
-package com.castor.guloso.web.config;
+package com.castor.guloso.app.config;
 
 import com.vaadin.flow.component.page.AppShellConfigurator;
 import com.vaadin.flow.theme.Theme;

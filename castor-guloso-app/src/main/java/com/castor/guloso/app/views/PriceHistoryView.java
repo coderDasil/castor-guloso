@@ -1,4 +1,4 @@
-package com.castor.guloso.web.views;
+package com.castor.guloso.app.views;
 
 import com.castor.guloso.menu.api.MenuItemResponse;
 import com.castor.guloso.menu.api.PriceHistoryResponse;

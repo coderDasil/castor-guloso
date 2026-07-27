@@ -92,6 +92,12 @@
             <optional>true</optional>
         </dependency>
 
+        <!-- Vaadin (views moved here from web module) -->
+        <dependency>
+            <groupId>com.vaadin</groupId>
+            <artifactId>vaadin-spring-boot-starter</artifactId>
+        </dependency>
+
         <!-- Test -->
         <dependency>
             <groupId>org.springframework.boot</groupId>

@@ -1,6 +1,6 @@
-package com.castor.guloso.web.views;
+package com.castor.guloso.app.views;
 
-import com.castor.guloso.web.components.LocaleToggle;
+import com.castor.guloso.app.components.LocaleToggle;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.html.Paragraph;

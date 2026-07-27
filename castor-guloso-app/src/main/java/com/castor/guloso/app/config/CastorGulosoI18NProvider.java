@@ -1,4 +1,4 @@
-package com.castor.guloso.web.config;
+package com.castor.guloso.app.config;
 
 import com.vaadin.flow.i18n.I18NProvider;
 import org.slf4j.Logger;

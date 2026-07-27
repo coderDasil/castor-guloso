@@ -1,4 +1,4 @@
-package com.castor.guloso.web.rest;
+package com.castor.guloso.app.rest;
 
 import com.castor.guloso.menu.api.MenuPriceRequest;
 import com.castor.guloso.menu.api.MenuPriceResponse;
