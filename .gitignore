@@ -40,5 +40,8 @@ package-lock.json
 tsconfig.json
 types.d.ts
 
+# Vaadin generated bundles
+**/src/main/bundles/
+
 # Build logs
 builds/build-*.log
