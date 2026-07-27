@@ -11,7 +11,7 @@
     </parent>
 
     <artifactId>castor-guloso-web</artifactId>
-    <packaging>war</packaging>
+    <packaging>jar</packaging>
     <name>Castor Guloso — Vaadin Web UI</name>
     <description>Java-based frontend using Vaadin 24. Pure Java UI components
         with server-side rendering and WebSocket push for live updates.</description>
