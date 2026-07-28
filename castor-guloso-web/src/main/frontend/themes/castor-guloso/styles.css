@@ -7,3 +7,328 @@ html {
     --lumo-primary-color-10pct: rgba(200, 114, 46, 0.1);
     --lumo-primary-text-color: #8b5e2b;
 }
+/* Castor Guloso — Cardápio Digital Theme
+   Sophisticated, warm, premium feel for Restaurante Quaresma
+   ============================================================ */
+
+/* ── Variables ── */
+:host {
+    --brand-green: #1a3c34;
+    --brand-gold: #c8722e;
+    --brand-cream: #faf6f0;
+    --brand-dark: #2c1810;
+    --text-primary: #2c1810;
+    --text-secondary: #6b5b4e;
+    --text-muted: #9c8c7e;
+    --card-bg: #ffffff;
+    --card-shadow: 0 2px 12px rgba(44, 24, 16, 0.08);
+    --radius: 12px;
+    --radius-lg: 20px;
+    --font-display: 'Playfair Display', Georgia, serif;
+    --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+
+    font-family: var(--font-body);
+    color: var(--text-primary);
+}
+
+/* ── Hero Section ── */
+.hero {
+    background: linear-gradient(135deg, var(--brand-green) 0%, #0f2a24 100%);
+    color: white;
+    padding: 2.5rem 1.5rem;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.hero::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle at 30% 40%, rgba(200, 114, 46, 0.15) 0%, transparent 50%);
+    pointer-events: none;
+}
+
+.hero h1 {
+    font-family: var(--font-display);
+    font-size: 2rem;
+    font-weight: 700;
+    margin: 0;
+    letter-spacing: -0.02em;
+    position: relative;
+}
+
+.hero .tagline {
+    font-size: 0.95rem;
+    opacity: 0.85;
+    margin: 0.5rem 0 0;
+    font-weight: 400;
+    letter-spacing: 0.02em;
+    position: relative;
+}
+
+.hero .badge {
+    display: inline-block;
+    background: rgba(255, 255, 255, 0.12);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    padding: 0.4rem 1rem;
+    border-radius: 50px;
+    font-size: 0.8rem;
+    margin-top: 1rem;
+    position: relative;
+}
+
+/* ── Info Bar ── */
+.info-bar {
+    background: var(--brand-cream);
+    padding: 0.75rem 1rem;
+    text-align: center;
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    border-bottom: 1px solid rgba(0,0,0,0.04);
+    letter-spacing: 0.01em;
+}
+
+/* ── Section Headers ── */
+.section-title {
+    font-family: var(--font-display);
+    font-size: 1.4rem;
+    font-weight: 600;
+    color: var(--brand-green);
+    margin: 1.5rem 0 0.25rem;
+    padding: 0 1rem;
+    position: relative;
+}
+
+.section-subtitle {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    margin: 0 0 1rem;
+    padding: 0 1rem;
+}
+
+/* ── Menu Items ── */
+.menu-section {
+    max-width: 640px;
+    margin: 0 auto;
+    width: 100%;
+    padding: 0 1rem;
+}
+
+.menu-card {
+    background: var(--card-bg);
+    border-radius: var(--radius);
+    box-shadow: var(--card-shadow);
+    padding: 1.25rem;
+    margin-bottom: 0.75rem;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+    border: 1px solid rgba(0,0,0,0.03);
+}
+
+.menu-card:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 20px rgba(44, 24, 16, 0.12);
+}
+
+.menu-card .item-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 0.5rem;
+}
+
+.menu-card .item-name {
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.menu-card .item-price {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--brand-gold);
+    white-space: nowrap;
+}
+
+.menu-card .item-desc {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    margin: 0.3rem 0 0;
+    line-height: 1.4;
+}
+
+.menu-card .whatsapp-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    background: #25D366;
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    text-decoration: none;
+    font-size: 0.82rem;
+    font-weight: 500;
+    margin-top: 0.75rem;
+    transition: background 0.15s ease;
+}
+
+.menu-card .whatsapp-btn:hover {
+    background: #1ebe5d;
+}
+
+/* ── Empty State ── */
+.empty-state {
+    text-align: center;
+    padding: 3rem 1rem;
+    color: var(--text-muted);
+}
+
+.empty-state .emoji {
+    font-size: 3rem;
+    display: block;
+    margin-bottom: 0.5rem;
+}
+
+/* ── Reviews ── */
+.reviews-section {
+    max-width: 640px;
+    margin: 1.5rem auto;
+    width: 100%;
+    padding: 0 1rem;
+}
+
+.rating-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: #fff8e7;
+    border: 1px solid #f0e6c8;
+    padding: 0.4rem 1rem;
+    border-radius: 50px;
+    font-size: 0.85rem;
+    color: #8b6914;
+    margin-bottom: 1rem;
+}
+
+.review-card {
+    background: var(--card-bg);
+    border-radius: var(--radius);
+    box-shadow: var(--card-shadow);
+    padding: 1rem 1.25rem;
+    margin-bottom: 0.6rem;
+    border: 1px solid rgba(0,0,0,0.03);
+}
+
+.review-card .stars {
+    color: #f1c40f;
+    font-size: 0.9rem;
+    letter-spacing: 0.05em;
+}
+
+.review-card .text {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    margin: 0.3rem 0;
+    font-style: italic;
+    line-height: 1.5;
+}
+
+.review-card .author {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+}
+
+/* ── Location ── */
+.info-section {
+    max-width: 640px;
+    margin: 0 auto;
+    width: 100%;
+    padding: 0 1rem 1.5rem;
+}
+
+.info-card {
+    background: var(--card-bg);
+    border-radius: var(--radius);
+    box-shadow: var(--card-shadow);
+    padding: 1.25rem;
+    border: 1px solid rgba(0,0,0,0.03);
+}
+
+.info-card .info-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    margin-bottom: 0.75rem;
+}
+
+.info-card .info-row:last-child {
+    margin-bottom: 0;
+}
+
+.info-card .info-icon {
+    font-size: 1.1rem;
+    flex-shrink: 0;
+    width: 1.5rem;
+    text-align: center;
+}
+
+.info-card .info-label {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    display: block;
+}
+
+.info-card .info-value {
+    font-size: 0.9rem;
+    color: var(--text-primary);
+}
+
+.info-card .map-link {
+    color: var(--brand-gold);
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 0.9rem;
+}
+
+.info-card .map-link:hover {
+    text-decoration: underline;
+}
+
+/* ── CTA Button ── */
+.cta-wrapper {
+    text-align: center;
+    padding: 1.5rem 1rem;
+}
+
+.cta-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: #25D366;
+    color: white !important;
+    padding: 1rem 2.5rem;
+    border-radius: 50px;
+    text-decoration: none;
+    font-size: 1.1rem;
+    font-weight: 600;
+    box-shadow: 0 4px 20px rgba(37, 211, 102, 0.35);
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.cta-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 25px rgba(37, 211, 102, 0.4);
+}
+
+/* ── Footer ── */
+.footer {
+    text-align: center;
+    padding: 1rem;
+    background: var(--brand-dark);
+    color: rgba(255,255,255,0.6);
+    font-size: 0.78rem;
+}
