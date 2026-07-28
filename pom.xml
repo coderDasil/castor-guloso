@@ -38,6 +38,7 @@
 
         <!-- Dependency versions -->
         <vaadin.version>24.4.4</vaadin.version>
+        <zxing.version>3.5.3</zxing.version>
     </properties>
 
     <dependencyManagement>
@@ -81,6 +82,18 @@
                 <version>${vaadin.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
+            </dependency>
+
+            <!-- ZXing QR Code -->
+            <dependency>
+                <groupId>com.google.zxing</groupId>
+                <artifactId>core</artifactId>
+                <version>${zxing.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.google.zxing</groupId>
+                <artifactId>javase</artifactId>
+                <version>${zxing.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

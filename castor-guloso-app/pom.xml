@@ -92,6 +92,16 @@
             <optional>true</optional>
         </dependency>
 
+        <!-- ZXing -->
+        <dependency>
+            <groupId>com.google.zxing</groupId>
+            <artifactId>core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.google.zxing</groupId>
+            <artifactId>javase</artifactId>
+        </dependency>
+
         <!-- Vaadin (views moved here from web module) -->
         <dependency>
             <groupId>com.vaadin</groupId>
