@@ -22,8 +22,12 @@ public class MainView extends VerticalLayout {
         add(new Paragraph(getTranslation("app.tagline")));
 
         // Navigation buttons
-        add(new Button(getTranslation("menu.title"), e -> getUI().ifPresent(ui -> ui.navigate(MenuItemsView.class))));
-        add(new Button(getTranslation("dailymenu.title"), e -> getUI().ifPresent(ui -> ui.navigate(DailyMenuView.class))));
+        add(new Button(getTranslation("customer.title"),
+                e -> getUI().ifPresent(ui -> ui.navigate(CustomersView.class))));
+        add(new Button(getTranslation("menu.title"),
+                e -> getUI().ifPresent(ui -> ui.navigate(MenuItemsView.class))));
+        add(new Button(getTranslation("dailymenu.title"),
+                e -> getUI().ifPresent(ui -> ui.navigate(DailyMenuView.class))));
 
         // Language switcher
         add(new LocaleToggle());
