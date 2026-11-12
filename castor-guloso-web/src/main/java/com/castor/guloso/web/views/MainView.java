@@ -2,6 +2,7 @@ package com.castor.guloso.web.views;
 
 import com.castor.guloso.web.components.LocaleToggle;
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.html.Paragraph;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -21,15 +22,18 @@ public class MainView extends VerticalLayout {
         add(new H1(getTranslation("app.title")));
         add(new Paragraph(getTranslation("app.tagline")));
 
-        // Navigation buttons
-        add(new Button(getTranslation("customer.title"),
-                e -> getUI().ifPresent(ui -> ui.navigate(CustomersView.class))));
-        add(new Button(getTranslation("menu.title"),
-                e -> getUI().ifPresent(ui -> ui.navigate(MenuItemsView.class))));
-        add(new Button(getTranslation("dailymenu.title"),
-                e -> getUI().ifPresent(ui -> ui.navigate(DailyMenuView.class))));
+        Button dashboardBtn = new Button(getTranslation("dashboard.title"),
+                e -> getUI().ifPresent(ui -> ui.navigate(DashboardView.class)));
+        dashboardBtn.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+        add(dashboardBtn);
 
-        // Language switcher
+        add(new Button(getTranslation("customer.title"),
+                e -> getUI().ifPresent(ui -> ui.navigate(CustomersView.class)));
+        add(new Button(getTranslation("menu.title"),
+                e -> getUI().ifPresent(ui -> ui.navigate(MenuItemsView.class)));
+        add(new Button(getTranslation("dailymenu.title"),
+                e -> getUI().ifPresent(ui -> ui.navigate(DailyMenuView.class)));
+
         add(new LocaleToggle());
     }
 }

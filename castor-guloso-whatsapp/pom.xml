@@ -29,6 +29,10 @@
             <groupId>com.castor.guloso</groupId>
             <artifactId>castor-guloso-order</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.castor.guloso</groupId>
+            <artifactId>castor-guloso-menu</artifactId>
+        </dependency>
 
         <!-- Spring Boot -->
         <dependency>
