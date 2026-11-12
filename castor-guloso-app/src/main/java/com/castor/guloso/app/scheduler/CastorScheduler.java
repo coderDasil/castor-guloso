@@ -4,7 +4,6 @@ import com.castor.guloso.order.service.OrderSessionService;
 import com.castor.guloso.whatsapp.service.WhatsAppMessageService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
