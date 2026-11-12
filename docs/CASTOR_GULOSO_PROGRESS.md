@@ -1,7 +1,7 @@
 # 🦫 Castor Guloso — Project Progress
 
-> **Last update:** 2026-11-09 — Customer CRUD delivered (commit abf1744)
-> **Previous build:** ✅ SUCCESS — 2026-07-27
+> **Last update:** 2026-11-12 — WhatsApp stub + Scheduler + Live Dashboard (pushed to GitHub)
+> **Previous:** Customer CRUD (2026-11-09)
 
 ---
 
@@ -9,92 +9,98 @@
 
 | Module | Artifact | Status | What it does |
 |--------|----------|--------|-------------|
-| 🧠 Core | `castor-guloso-core` | ✅ Done | JPA entities, enums, shared DTOs |
-| 👤 Customer | `castor-guloso-customer` | ✅ Done | Repos + **CustomerService** + DTOs |
-| 📋 Menu | `castor-guloso-menu` | ✅ Done | Menu item CRUD + daily menu services |
-| 🧾 Order | `castor-guloso-order` | 🟡 Partial | Order repositories + favorite queries |
-| 💬 WhatsApp | `castor-guloso-whatsapp` | ⏳ Stub | Module scaffolded, no logic yet |
-| 🖥️ Web (Vaadin) | `castor-guloso-web` | ✅ Done | REST + Vaadin views (Menu + **Customers**) |
-| 🚀 App | `castor-guloso-app` | ✅ Done | Spring Boot entry + Flyway migrations |
-| 🔧 Build | `builds/build.py` | ✅ Done | Silent Maven runner with timestamped logs |
+| 🧠 Core | `castor-guloso-core` | ✅ Done | JPA entities, enums |
+| 👤 Customer | `castor-guloso-customer` | ✅ Done | Service + DTOs + repos + tags |
+| 📋 Menu | `castor-guloso-menu` | ✅ Done | Menu item + daily menu + prices |
+| 🧾 Order | `castor-guloso-order` | ✅ Done | Session lifecycle, confirm, kitchen summary |
+| 💬 WhatsApp | `castor-guloso-whatsapp` | 🟡 Stub+ | Logging client, webhook, message service |
+| 🖥️ Web (Vaadin) | `castor-guloso-web` | ✅ Done | Menu, Customers, **Dashboard**, i18n |
+| 🚀 App | `castor-guloso-app` | ✅ Done | Boot + Flyway + **CastorScheduler** |
 
 ---
 
-## 🌐 REST API — Available Endpoints
+## 🌐 REST API (high level)
 
-### Menu
+### Orders (`/api/orders`)
 | Method | Endpoint | Description |
 |--------|----------|-------------|
-| `GET` | `/api/menu-items` | List all menu items |
-| `GET` | `/api/menu-items/available` | List only available items |
-| `GET` | `/api/menu-items/{id}` | Get item by ID |
-| `POST` | `/api/menu-items` | Create new item |
-| `PUT` | `/api/menu-items/{id}` | Update existing item |
-| `DELETE` | `/api/menu-items/{id}` | Delete item |
-| `GET` | `/api/daily-menus/today` | Get today's menu |
-| `GET` | `/api/daily-menus/{date}` | Get menu for a date |
-| `POST` | `/api/daily-menus` | Set today's menu |
+| POST | `/api/orders/session/open` | Open or get today's session |
+| POST | `/api/orders/session/create-pending` | Create PENDING for all active customers |
+| GET | `/api/orders/today` | All orders today |
+| GET | `/api/orders/today/{status}` | Filter by PENDING/CONFIRMED/NO_REPLY |
+| POST | `/api/orders/{id}/confirm` | Confirm with menuItemId or freeText |
+| POST | `/api/orders/confirm-by-phone` | Confirm by customer phone (webhook use) |
+| POST | `/api/orders/session/finalize` | Close session + mark remaining NO_REPLY |
+| GET | `/api/orders/summary` | Kitchen summary aggregates |
 
-### Customers (NEW)
+### WhatsApp webhook
 | Method | Endpoint | Description |
 |--------|----------|-------------|
-| `GET` | `/api/customers` | List all customers |
-| `GET` | `/api/customers/active` | List only active customers |
-| `GET` | `/api/customers/{id}` | Get by ID |
-| `POST` | `/api/customers` | Create customer |
-| `PUT` | `/api/customers/{id}` | Update customer |
-| `DELETE` | `/api/customers/{id}` | Deactivate customer |
-| `POST` | `/api/customers/{id}/tags/{tagId}` | Attach tag (optional notes body) |
-| `DELETE` | `/api/customers/{id}/tags/{tagId}` | Remove tag |
-| `GET` | `/api/customers/tags/available` | List active tags |
+| GET | `/webhook/whatsapp` | Meta verification challenge |
+| POST | `/webhook/whatsapp` | Inbound messages → confirm order by phone |
 
 ---
 
-## 🖥️ Vaadin UI — Available Views
+## 🖥️ Vaadin UI
 
 | Route | View | Description |
 |-------|------|-------------|
-| `/` | MainView | Landing page with navigation buttons |
-| `/customers` | **CustomersView** | **NEW** — Grid + add/edit dialog + tag badges |
-| `/menu-items` | MenuItemsView | Grid of all items with add/edit dialog |
-| `/today-menu` | DailyMenuView | Checkbox picker to set today's menu |
-| `/price-history` | PriceHistoryView | Price history per item |
+| `/` | MainView | Landing + nav (Dashboard primary button) |
+| `/dashboard` | **DashboardView** | Live board: send / refresh / finalize + kitchen summary |
+| `/customers` | CustomersView | Customer CRUD + tag badges |
+| `/menu-items` | MenuItemsView | Menu catalog CRUD |
+| `/today-menu` | DailyMenuView | Pick today's offered items |
+| `/price-history` | PriceHistoryView | Price history |
 
 ---
 
-## 📈 Progress vs Milestones
+## 📈 Milestones
 
-| # | Milestone | Status | Est. Days | Notes |
-|---|-----------|--------|-----------|-------|
-| M1 | Scaffolding | ✅ Done | — | Modules, entities, repos, Flyway, Vaadin |
-| M2 | Menu CRUD | ✅ Done | 2 | Services + REST + Vaadin views |
-| M3 | Customer CRUD | ✅ **Done** | 2 | Service + REST + Vaadin + tags |
-| M4 | WhatsApp Integration | ⏳ Pending | 3 | Meta setup + webhook |
-| M5 | Order Lifecycle | ⏳ Pending | 3 | Scheduler + state machine |
-| M6 | Live Dashboard | ⏳ Pending | 2 | Vaadin real-time board |
-| M7 | Personalization | ⏳ Pending | 2 | Favorite detection |
-| M8 | Finalization & Summary | ⏳ Pending | 1 | Cutoff + kitchen summary |
-| M9 | i18n & Localization | ✅ Done | 1 | EN + PT_BR |
-| M10 | Customer Categorization | ✅ Done | 2 | Tags seeded, attach/detach in UI |
-| M11 | Testing & Polish | ⏳ Pending | 2 | Edge cases, coverage |
+| # | Milestone | Status | Notes |
+|---|-----------|--------|-------|
+| M1 | Scaffolding | ✅ | |
+| M2 | Menu CRUD | ✅ | |
+| M3 | Customer CRUD | ✅ | |
+| M4 | WhatsApp Integration | 🟡 Partial | Logging client + webhook + send pipeline. Real Meta client still TODO |
+| M5 | Order Lifecycle | ✅ | open → pending → confirm → finalize + summary |
+| M6 | Live Dashboard | ✅ | DashboardView with actions |
+| M7 | Personalization | ⏳ | Favorite detection not yet |
+| M8 | Finalization & Summary | ✅ | finalizeSession + kitchenSummary |
+| M9 | i18n | ✅ | EN + pt_BR including dashboard keys |
+| M10 | Tags | ✅ | |
+| M11 | Testing & Polish | ⏳ | |
 
 ---
 
-## 🧪 How to Run
+## ⚙️ New configuration
+
+```properties
+whatsapp.mode=logging
+castor.scheduler.send-cron=0 0 10 * * *
+castor.scheduler.cutoff-cron=0 30 11 * * *
+```
+
+---
+
+## 🧪 How to run
 
 ```bash
-cd restaurant-app/castor-guloso   # or your local clone path
+cd castor-guloso
+mv .mvn/maven.config .mvn/maven.config.bak   # optional if -pl interferes
+mvn -DskipTests install
+mv .mvn/maven.config.bak .mvn/maven.config
 
 mvn spring-boot:run
-# App → http://localhost:7080
-# Customers → http://localhost:7080/customers
+# → http://localhost:7080
+# → http://localhost:7080/dashboard
 ```
 
 ---
 
 ## Next recommended work
 
-1. **Order service** — create DailySession, generate PENDING DailyOrders for active customers
-2. **WhatsApp stub client** — log-only sender so the rest of the pipeline can be wired
-3. **Scheduler** — 10:00 send + 11:30 cutoff (config already in application.properties)
-4. **Live Dashboard** Vaadin view
+1. **Real MetaWhatsAppClient** (`whatsapp.mode=meta`) using WebClient
+2. **Personalization** — favorite item from last N confirmed orders
+3. **Vaadin push / auto-refresh** on Dashboard
+4. **Unit/integration tests**
+5. **Deployment notes** (Render / Railway / Oracle free tier)
