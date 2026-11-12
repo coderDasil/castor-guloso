@@ -1,34 +1,60 @@
 # 🦫 Castor Guloso — Project Progress
 
-> **Last update:** 2026-11-12 — WhatsApp stub + Scheduler + Live Dashboard (pushed to GitHub)
+> **Last update:** 2026-11-10 — WhatsApp stub + Scheduler + Live Dashboard
 > **Previous:** Customer CRUD (2026-11-09)
 
 ---
 
 ## 📦 Modules Overview
 
-| Module | Artifact | Status | What it does |
-|--------|----------|--------|-------------|
-| 🧠 Core | `castor-guloso-core` | ✅ Done | JPA entities, enums |
-| 👤 Customer | `castor-guloso-customer` | ✅ Done | Service + DTOs + repos + tags |
-| 📋 Menu | `castor-guloso-menu` | ✅ Done | Menu item + daily menu + prices |
-| 🧾 Order | `castor-guloso-order` | ✅ Done | Session lifecycle, confirm, kitchen summary |
-| 💬 WhatsApp | `castor-guloso-whatsapp` | 🟡 Stub+ | Logging client, webhook, message service |
-| 🖥️ Web (Vaadin) | `castor-guloso-web` | ✅ Done | Menu, Customers, **Dashboard**, i18n |
-| 🚀 App | `castor-guloso-app` | ✅ Done | Boot + Flyway + **CastorScheduler** |
+| Module | Artifact | Responsibility |
+|--------|----------|----------------|
+| core | castor-guloso-core | Domain entities, enums, shared exceptions |
+| customer | castor-guloso-customer | Customer + Tag CRUD, repositories |
+| menu | castor-guloso-menu | MenuItem, DailyMenu, price history |
+| order | castor-guloso-order | OrderSession, DailyOrder lifecycle, kitchen summary |
+| whatsapp | castor-guloso-whatsapp | WhatsAppClient, MessageService, Webhook |
+| web | castor-guloso-web | Vaadin 24 UI (Dashboard, Customers, Menu, …) |
+| app | castor-guloso-app | Spring Boot entrypoint + scheduler |
 
 ---
 
-## 🌐 REST API (high level)
+## ✅ What is working right now
 
-### Orders (`/api/orders`)
+### Order lifecycle (M5 + M8)
+- `OrderSessionService` opens a daily session, creates PENDING orders for active customers
+- Confirm by phone (webhook) or free-text reply
+- `finalizeSession()` marks remaining as NO_REPLY and closes the session
+- `kitchenSummary()` aggregates confirmed items for the kitchen
+
+### WhatsApp (M4 partial)
+- `WhatsAppClient` interface + `LoggingWhatsAppClient` (`whatsapp.mode=logging`)
+- `WhatsAppMessageService.sendDailyLunchRequests()` — open session → create pending → send text → store msg id
+- Webhook: GET verification + POST inbound text → `confirmByCustomerPhone`
+- No Meta credentials required in logging mode
+
+### Scheduler
+- `@Scheduled` morning send (default 10:00) and cutoff finalize (default 11:30)
+- Cron expressions configurable in `application.properties`
+
+### Live Dashboard (M6)
+- Route `/dashboard`
+- Action buttons: Send lunch requests / Refresh / Finalize day
+- Live order grid + kitchen summary grid
+- Stats line (total / pending / confirmed / no-reply)
+
+### i18n (M9)
+- Full EN + pt_BR message bundles including dashboard keys
+
+---
+
+## 🔌 REST API (selected)
+
 | Method | Endpoint | Description |
 |--------|----------|-------------|
-| POST | `/api/orders/session/open` | Open or get today's session |
-| POST | `/api/orders/session/create-pending` | Create PENDING for all active customers |
-| GET | `/api/orders/today` | All orders today |
-| GET | `/api/orders/today/{status}` | Filter by PENDING/CONFIRMED/NO_REPLY |
-| POST | `/api/orders/{id}/confirm` | Confirm with menuItemId or freeText |
+| POST | `/api/orders/session/open` | Open today’s session |
+| POST | `/api/orders/pending` | Create pending for active customers |
+| POST | `/api/orders/{id}/confirm` | Confirm an order |
 | POST | `/api/orders/confirm-by-phone` | Confirm by customer phone (webhook use) |
 | POST | `/api/orders/session/finalize` | Close session + mark remaining NO_REPLY |
 | GET | `/api/orders/summary` | Kitchen summary aggregates |
@@ -49,7 +75,7 @@
 | `/dashboard` | **DashboardView** | Live board: send / refresh / finalize + kitchen summary |
 | `/customers` | CustomersView | Customer CRUD + tag badges |
 | `/menu-items` | MenuItemsView | Menu catalog CRUD |
-| `/today-menu` | DailyMenuView | Pick today's offered items |
+| `/today-menu` | DailyMenuView | Pick today’s offered items |
 | `/price-history` | PriceHistoryView | Price history |
 
 ---
@@ -75,7 +101,7 @@
 ## ⚙️ New configuration
 
 ```properties
-whatsapp.mode=logging
+whatsapp.mode=logging          # default: LoggingWhatsAppClient (no Meta calls)
 castor.scheduler.send-cron=0 0 10 * * *
 castor.scheduler.cutoff-cron=0 30 11 * * *
 ```
@@ -86,6 +112,7 @@ castor.scheduler.cutoff-cron=0 30 11 * * *
 
 ```bash
 cd castor-guloso
+# full reactor (ignore .mvn/maven.config -pl restriction when installing modules)
 mv .mvn/maven.config .mvn/maven.config.bak   # optional if -pl interferes
 mvn -DskipTests install
 mv .mvn/maven.config.bak .mvn/maven.config
@@ -99,8 +126,8 @@ mvn spring-boot:run
 
 ## Next recommended work
 
-1. **Real MetaWhatsAppClient** (`whatsapp.mode=meta`) using WebClient
-2. **Personalization** — favorite item from last N confirmed orders
+1. **Real MetaWhatsAppClient** (behind `whatsapp.mode=meta`) using WebClient
+2. **Personalization** — detect favorite item from last N confirmed orders and tailor message
 3. **Vaadin push / auto-refresh** on Dashboard
-4. **Unit/integration tests**
+4. **Unit/integration tests** for OrderSessionService + webhook parsing
 5. **Deployment notes** (Render / Railway / Oracle free tier)
